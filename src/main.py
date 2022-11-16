@@ -11,6 +11,7 @@ from admin import setup_admin
 from models import db, User
 import flask
 from flask import Flask,request
+import json
 #from models import Person
 
 app = Flask(__name__)
@@ -528,7 +529,7 @@ planets = [ {
 			"url": "https://swapi.dev/api/planets/10/"
 		}]
 
-
+favoritos=[{"name":"Luke Skywalker"},{"name":"Kamino"}]
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
@@ -570,6 +571,17 @@ def personajes():
     # y luego puedes retornarla (return) en el response body así:
     return json_text
 
+@app.route('/users/favorites', methods=['GET'])
+def favorites():
+   
+ 
+
+    # puedes convertir esa variable en un string json así
+    json_text = flask.jsonify(favoritos)
+
+    # y luego puedes retornarla (return) en el response body así:
+    return json_text
+
 @app.route('/planets', methods=['GET'])
 def planetas():
    
@@ -592,7 +604,48 @@ def get_people(people_id):
 	return jsonify({"personaje": peopleFound})
 
 
+@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
+def add_new_pl():
+    request_body = request.data
+    print("Incoming request with the following body", request_body)
+    decoded_object = json.loads(request.data)
+    favoritos.append(decoded_object)
+    json_textt = flask.jsonify(favoritos)
+    return  json_textt
 
+@app.route('/favorite/people/<int:people_id>', methods=['POST'])
+def add_new_p():
+    request_body = request.data
+    print("Incoming request with the following body", request_body)
+    decoded_object = json.loads(request.data)
+    favoritos.append(decoded_object)
+    json_textt = flask.jsonify(favoritos)
+    return  json_textt
+
+
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
+def delete_pl(position):
+    print("This is the position to delete: ",position)
+    del favoritos[position]
+    json_texttt = flask.jsonify(favoritos)
+    return json_texttt
+
+@app.route('/favorite/people/<int:people_id>', methods=['DELETE'])
+def delete_p(position):
+    print("This is the position to delete: ",position)
+    del favoritos[position]
+    json_texttt = flask.jsonify(favoritos)
+    return json_texttt
+
+@app.route('/users/favorites', methods=['POST'])
+def add_new_pll():
+    request_body = request.data
+    print("Incoming request with the following body", request_body)
+    decoded_object = json.loads(request.data)
+    favoritos.append(decoded_object)
+    json_textt = flask.jsonify(favoritos)
+    return  json_textt
 
 
     
