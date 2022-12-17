@@ -8,528 +8,9 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
-import flask
-from flask import Flask,request
-import json
+from models import db, User, Characters, Planets, Favorite_Characters, Favorite_Planets
 #from models import Person
 
-app = Flask(__name__)
-
-
-
-
-
-peoples =  [
-    
-    {       "id": 1,
-			"name": "Luke Skywalker",
-			"height": "172",
-			"mass": "77",
-			"hair_color": "blond",
-			"skin_color": "fair",
-			"eye_color": "blue",
-			"birth_year": "19BBY",
-			"gender": "male",
-			"homeworld": "https://swapi.dev/api/planets/1/",
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/2/",
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"species": [],
-			"vehicles": [
-				"https://swapi.dev/api/vehicles/14/",
-				"https://swapi.dev/api/vehicles/30/"
-			],
-			"starships": [
-				"https://swapi.dev/api/starships/12/",
-				"https://swapi.dev/api/starships/22/"
-			],
-			"created": "2014-12-09T13:50:51.644000Z",
-			"edited": "2014-12-20T21:17:56.891000Z",
-			"url": "https://swapi.dev/api/people/1/"
-		},
-		{
-            "id": 2,
-			"name": "C-3PO",
-			"height": "167",
-			"mass": "75",
-			"hair_color": "n/a",
-			"skin_color": "gold",
-			"eye_color": "yellow",
-			"birth_year": "112BBY",
-			"gender": "n/a",
-			"homeworld": "https://swapi.dev/api/planets/1/",
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/2/",
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/4/",
-				"https://swapi.dev/api/films/5/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"species": [
-				"https://swapi.dev/api/species/2/"
-			],
-			"vehicles": [],
-			"starships": [],
-			"created": "2014-12-10T15:10:51.357000Z",
-			"edited": "2014-12-20T21:17:50.309000Z",
-			"url": "https://swapi.dev/api/people/2/"
-		},
-		{
-            "id": 3,
-			"name": "R2-D2",
-			"height": "96",
-			"mass": "32",
-			"hair_color": "n/a",
-			"skin_color": "white, blue",
-			"eye_color": "red",
-			"birth_year": "33BBY",
-			"gender": "n/a",
-			"homeworld": "https://swapi.dev/api/planets/8/",
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/2/",
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/4/",
-				"https://swapi.dev/api/films/5/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"species": [
-				"https://swapi.dev/api/species/2/"
-			],
-			"vehicles": [],
-			"starships": [],
-			"created": "2014-12-10T15:11:50.376000Z",
-			"edited": "2014-12-20T21:17:50.311000Z",
-			"url": "https://swapi.dev/api/people/3/"
-		},
-		{
-            "id": 4,
-			"name": "Darth Vader",
-			"height": "202",
-			"mass": "136",
-			"hair_color": "none",
-			"skin_color": "white",
-			"eye_color": "yellow",
-			"birth_year": "41.9BBY",
-			"gender": "male",
-			"homeworld": "https://swapi.dev/api/planets/1/",
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/2/",
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"species": [],
-			"vehicles": [],
-			"starships": [
-				"https://swapi.dev/api/starships/13/"
-			],
-			"created": "2014-12-10T15:18:20.704000Z",
-			"edited": "2014-12-20T21:17:50.313000Z",
-			"url": "https://swapi.dev/api/people/4/"
-		},
-		{
-            "id": 5,
-			"name": "Leia Organa",
-			"height": "150",
-			"mass": "49",
-			"hair_color": "brown",
-			"skin_color": "light",
-			"eye_color": "brown",
-			"birth_year": "19BBY",
-			"gender": "female",
-			"homeworld": "https://swapi.dev/api/planets/2/",
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/2/",
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"species": [],
-			"vehicles": [
-				"https://swapi.dev/api/vehicles/30/"
-			],
-			"starships": [],
-			"created": "2014-12-10T15:20:09.791000Z",
-			"edited": "2014-12-20T21:17:50.315000Z",
-			"url": "https://swapi.dev/api/people/5/"
-		},
-		{
-            "id": 6,
-			"name": "Owen Lars",
-			"height": "178",
-			"mass": "120",
-			"hair_color": "brown, grey",
-			"skin_color": "light",
-			"eye_color": "blue",
-			"birth_year": "52BBY",
-			"gender": "male",
-			"homeworld": "https://swapi.dev/api/planets/1/",
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/5/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"species": [],
-			"vehicles": [],
-			"starships": [],
-			"created": "2014-12-10T15:52:14.024000Z",
-			"edited": "2014-12-20T21:17:50.317000Z",
-			"url": "https://swapi.dev/api/people/6/"
-		},
-		{
-            "id":7,
-			"name": "Beru Whitesun lars",
-			"height": "165",
-			"mass": "75",
-			"hair_color": "brown",
-			"skin_color": "light",
-			"eye_color": "blue",
-			"birth_year": "47BBY",
-			"gender": "female",
-			"homeworld": "https://swapi.dev/api/planets/1/",
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/5/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"species": [],
-			"vehicles": [],
-			"starships": [],
-			"created": "2014-12-10T15:53:41.121000Z",
-			"edited": "2014-12-20T21:17:50.319000Z",
-			"url": "https://swapi.dev/api/people/7/"
-		},
-		{
-            "id": 8,
-			"name": "R5-D4",
-			"height": "97",
-			"mass": "32",
-			"hair_color": "n/a",
-			"skin_color": "white, red",
-			"eye_color": "red",
-			"birth_year": "unknown",
-			"gender": "n/a",
-			"homeworld": "https://swapi.dev/api/planets/1/",
-			"films": [
-				"https://swapi.dev/api/films/1/"
-			],
-			"species": [
-				"https://swapi.dev/api/species/2/"
-			],
-			"vehicles": [],
-			"starships": [],
-			"created": "2014-12-10T15:57:50.959000Z",
-			"edited": "2014-12-20T21:17:50.321000Z",
-			"url": "https://swapi.dev/api/people/8/"
-		},
-		{
-            "id": 9,
-			"name": "Biggs Darklighter",
-			"height": "183",
-			"mass": "84",
-			"hair_color": "black",
-			"skin_color": "light",
-			"eye_color": "brown",
-			"birth_year": "24BBY",
-			"gender": "male",
-			"homeworld": "https://swapi.dev/api/planets/1/",
-			"films": [
-				"https://swapi.dev/api/films/1/"
-			],
-			"species": [],
-			"vehicles": [],
-			"starships": [
-				"https://swapi.dev/api/starships/12/"
-			],
-			"created": "2014-12-10T15:59:50.509000Z",
-			"edited": "2014-12-20T21:17:50.323000Z",
-			"url": "https://swapi.dev/api/people/9/"
-		},
-		{
-            "id": 9,
-			"name": "Obi-Wan Kenobi",
-			"height": "182",
-			"mass": "77",
-			"hair_color": "auburn, white",
-			"skin_color": "fair",
-			"eye_color": "blue-gray",
-			"birth_year": "57BBY",
-			"gender": "male",
-			"homeworld": "https://swapi.dev/api/planets/20/",
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/2/",
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/4/",
-				"https://swapi.dev/api/films/5/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"species": [],
-			"vehicles": [
-				"https://swapi.dev/api/vehicles/38/"
-			],
-			"starships": [
-				"https://swapi.dev/api/starships/48/",
-				"https://swapi.dev/api/starships/59/",
-				"https://swapi.dev/api/starships/64/",
-				"https://swapi.dev/api/starships/65/",
-				"https://swapi.dev/api/starships/74/"
-			],
-			"created": "2014-12-10T16:16:29.192000Z",
-			"edited": "2014-12-20T21:17:50.325000Z",
-			"url": "https://swapi.dev/api/people/10/"
-		}
-        
-	]
-    
-planets = [ {
-            "id": 1,
-			"name": "Tatooine",
-			"rotation_period": "23",
-			"orbital_period": "304",
-			"diameter": "10465",
-			"climate": "arid",
-			"gravity": "1 standard",
-			"terrain": "desert",
-			"surface_water": "1",
-			"population": "200000",
-			"residents": [
-				"https://swapi.dev/api/people/1/",
-				"https://swapi.dev/api/people/2/",
-				"https://swapi.dev/api/people/4/",
-				"https://swapi.dev/api/people/6/",
-				"https://swapi.dev/api/people/7/",
-				"https://swapi.dev/api/people/8/",
-				"https://swapi.dev/api/people/9/",
-				"https://swapi.dev/api/people/11/",
-				"https://swapi.dev/api/people/43/",
-				"https://swapi.dev/api/people/62/"
-			],
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/4/",
-				"https://swapi.dev/api/films/5/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"created": "2014-12-09T13:50:49.641000Z",
-			"edited": "2014-12-20T20:58:18.411000Z",
-			"url": "https://swapi.dev/api/planets/1/"
-		},
-		{	"id": 2,
-			"name": "Alderaan",
-			"rotation_period": "24",
-			"orbital_period": "364",
-			"diameter": "12500",
-			"climate": "temperate",
-			"gravity": "1 standard",
-			"terrain": "grasslands, mountains",
-			"surface_water": "40",
-			"population": "2000000000",
-			"residents": [
-				"https://swapi.dev/api/people/5/",
-				"https://swapi.dev/api/people/68/",
-				"https://swapi.dev/api/people/81/"
-			],
-			"films": [
-				"https://swapi.dev/api/films/1/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"created": "2014-12-10T11:35:48.479000Z",
-			"edited": "2014-12-20T20:58:18.420000Z",
-			"url": "https://swapi.dev/api/planets/2/"
-		},
-		{   "id": 3,
-			"name": "Yavin IV",
-			"rotation_period": "24",
-			"orbital_period": "4818",
-			"diameter": "10200",
-			"climate": "temperate, tropical",
-			"gravity": "1 standard",
-			"terrain": "jungle, rainforests",
-			"surface_water": "8",
-			"population": "1000",
-			"residents": [],
-			"films": [
-				"https://swapi.dev/api/films/1/"
-			],
-			"created": "2014-12-10T11:37:19.144000Z",
-			"edited": "2014-12-20T20:58:18.421000Z",
-			"url": "https://swapi.dev/api/planets/3/"
-		},
-		{
-            "id": 4,
-			"name": "Hoth",
-			"rotation_period": "23",
-			"orbital_period": "549",
-			"diameter": "7200",
-			"climate": "frozen",
-			"gravity": "1.1 standard",
-			"terrain": "tundra, ice caves, mountain ranges",
-			"surface_water": "100",
-			"population": "unknown",
-			"residents": [],
-			"films": [
-				"https://swapi.dev/api/films/2/"
-			],
-			"created": "2014-12-10T11:39:13.934000Z",
-			"edited": "2014-12-20T20:58:18.423000Z",
-			"url": "https://swapi.dev/api/planets/4/"
-		},
-		{
-            "id": 5,
-			"name": "Dagobah",
-			"rotation_period": "23",
-			"orbital_period": "341",
-			"diameter": "8900",
-			"climate": "murky",
-			"gravity": "N/A",
-			"terrain": "swamp, jungles",
-			"surface_water": "8",
-			"population": "unknown",
-			"residents": [],
-			"films": [
-				"https://swapi.dev/api/films/2/",
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"created": "2014-12-10T11:42:22.590000Z",
-			"edited": "2014-12-20T20:58:18.425000Z",
-			"url": "https://swapi.dev/api/planets/5/"
-		},
-		{
-            "id": 6,
-			"name": "Bespin",
-			"rotation_period": "12",
-			"orbital_period": "5110",
-			"diameter": "118000",
-			"climate": "temperate",
-			"gravity": "1.5 (surface), 1 standard (Cloud City)",
-			"terrain": "gas giant",
-			"surface_water": "0",
-			"population": "6000000",
-			"residents": [
-				"https://swapi.dev/api/people/26/"
-			],
-			"films": [
-				"https://swapi.dev/api/films/2/"
-			],
-			"created": "2014-12-10T11:43:55.240000Z",
-			"edited": "2014-12-20T20:58:18.427000Z",
-			"url": "https://swapi.dev/api/planets/6/"
-		},
-		{
-            "id": 7,
-			"name": "Endor",
-			"rotation_period": "18",
-			"orbital_period": "402",
-			"diameter": "4900",
-			"climate": "temperate",
-			"gravity": "0.85 standard",
-			"terrain": "forests, mountains, lakes",
-			"surface_water": "8",
-			"population": "30000000",
-			"residents": [
-				"https://swapi.dev/api/people/30/"
-			],
-			"films": [
-				"https://swapi.dev/api/films/3/"
-			],
-			"created": "2014-12-10T11:50:29.349000Z",
-			"edited": "2014-12-20T20:58:18.429000Z",
-			"url": "https://swapi.dev/api/planets/7/"
-		},
-		{
-            "id": 8,
-			"name": "Naboo",
-			"rotation_period": "26",
-			"orbital_period": "312",
-			"diameter": "12120",
-			"climate": "temperate",
-			"gravity": "1 standard",
-			"terrain": "grassy hills, swamps, forests, mountains",
-			"surface_water": "12",
-			"population": "4500000000",
-			"residents": [
-				"https://swapi.dev/api/people/3/",
-				"https://swapi.dev/api/people/21/",
-				"https://swapi.dev/api/people/35/",
-				"https://swapi.dev/api/people/36/",
-				"https://swapi.dev/api/people/37/",
-				"https://swapi.dev/api/people/38/",
-				"https://swapi.dev/api/people/39/",
-				"https://swapi.dev/api/people/42/",
-				"https://swapi.dev/api/people/60/",
-				"https://swapi.dev/api/people/61/",
-				"https://swapi.dev/api/people/66/"
-			],
-			"films": [
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/4/",
-				"https://swapi.dev/api/films/5/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"created": "2014-12-10T11:52:31.066000Z",
-			"edited": "2014-12-20T20:58:18.430000Z",
-			"url": "https://swapi.dev/api/planets/8/"
-		},
-		{
-            "id": 9,
-			"name": "Coruscant",
-			"rotation_period": "24",
-			"orbital_period": "368",
-			"diameter": "12240",
-			"climate": "temperate",
-			"gravity": "1 standard",
-			"terrain": "cityscape, mountains",
-			"surface_water": "unknown",
-			"population": "1000000000000",
-			"residents": [
-				"https://swapi.dev/api/people/34/",
-				"https://swapi.dev/api/people/55/",
-				"https://swapi.dev/api/people/74/"
-			],
-			"films": [
-				"https://swapi.dev/api/films/3/",
-				"https://swapi.dev/api/films/4/",
-				"https://swapi.dev/api/films/5/",
-				"https://swapi.dev/api/films/6/"
-			],
-			"created": "2014-12-10T11:54:13.921000Z",
-			"edited": "2014-12-20T20:58:18.432000Z",
-			"url": "https://swapi.dev/api/planets/9/"
-		},
-		{
-            "id": 10,
-			"name": "Kamino",
-			"rotation_period": "27",
-			"orbital_period": "463",
-			"diameter": "19720",
-			"climate": "temperate",
-			"gravity": "1 standard",
-			"terrain": "ocean",
-			"surface_water": "100",
-			"population": "1000000000",
-			"residents": [
-				"https://swapi.dev/api/people/22/",
-				"https://swapi.dev/api/people/72/",
-				"https://swapi.dev/api/people/73/"
-			],
-			"films": [
-				"https://swapi.dev/api/films/5/"
-			],
-			"created": "2014-12-10T12:45:06.577000Z",
-			"edited": "2014-12-20T20:58:18.434000Z",
-			"url": "https://swapi.dev/api/planets/10/"
-		}]
-
-favoritos=[{"name":"Luke Skywalker"},{"name":"Kamino"}]
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
@@ -549,110 +30,277 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-
 @app.route('/user', methods=['GET'])
 def handle_hello():
 
-    response_body = {
-        "user": "martin"
-    }
+    users_query = User.query.all()
 
-    return jsonify(response_body), 200
+    all_user = list(map(lambda x: x.serialize(), users_query))
 
+    return jsonify(all_user), 200
 
-@app.route('/peoples', methods=['GET'])
-def personajes():
-   
- 
+@app.route('/user', methods=['POST'])
+def createUser():
 
-    # puedes convertir esa variable en un string json así
-    json_text = flask.jsonify(peoples)
+    body = request.get_json()
+    if body is None:
+        return "The request body is null", 400
+    if 'email' not in body:
+        return "Add the user email", 400
+    if 'password' not in body:
+        return "Add user password", 400
+    if 'Is_active' not in body:
+        return "Add if the user is active", 400
 
-    # y luego puedes retornarla (return) en el response body así:
-    return json_text
+    new_user = User(email=body["email"], password=body["password"], is_active=body["Is_active"])
+    db.session.add(new_user)   
+    db.session.commit()             
+    
+    return 'User was added', 200
 
-@app.route('/users/favorites', methods=['GET'])
-def favorites():
-   
- 
+@app.route('/user/<int:id>', methods=['PUT'])
+def updateUser(id):
+    user1 = User.query.get(id)
 
-    # puedes convertir esa variable en un string json así
-    json_text = flask.jsonify(favoritos)
+    body = request.get_json()
+    
+    if body == None:
+        return 'Body is empty', 400
+    if 'email' not in body:
+        return "Add the user email", 400
 
-    # y luego puedes retornarla (return) en el response body así:
-    return json_text
+    user1.email = body["email"]
+    db.session.commit()            
+    
+    return 'ok'
+
+@app.route('/user/<int:id>', methods=['DELETE'])
+def deleteUser(id):
+    user1 = User.query.get(id)
+    if user1 == None:
+        raise APIException('User not found', status_code=404)
+    db.session.delete(user1)
+    db.session.commit()  
+    return 'User deleted'
+
+@app.route('/people', methods=['GET'])
+def getCharacters():
+
+    people_query = Characters.query.all()
+
+    all_characters = list(map(lambda x: x.serialize(), people_query))
+
+    return jsonify(all_characters), 200
+
+@app.route('/people', methods=['POST'])
+def addCharacter():
+
+    body = request.get_json()
+    if body is None:
+        return "The request body is null", 400
+    if 'name' not in body:
+        return "Add the character's name", 400
+    if 'birth_year' not in body:
+        return "Add character's birth year", 400
+    if 'gender' not in body:
+        return "Add character's gender", 400
+    if 'hair_color' not in body:
+        return "Add character's hair color", 400
+    if 'eye_color' not in body:
+        return "Add character's eye color", 400        
+
+    new_character = Characters(name=body["name"], birth_year=body["birth_year"], gender=body["gender"], hair_color=body["hair_color"], eye_color=body["eye_color"])
+    db.session.add(new_character)   
+    db.session.commit()             
+    
+    return 'Character was added', 200
+
+@app.route('/people/<int:id>', methods=['PUT'])
+def updateCharacter(id):
+    character1 = Characters.query.get(id)
+
+    body = request.get_json()
+    
+    if body == None:
+        return 'Body is empty', 400
+    if 'name' in body:
+        return "Name cannot be edited", 400
+    if 'birth_year' in body:
+        character1.birth_year = body["birth_year"]
+    if 'gender' in body:
+        character1.gender = body["gender"]
+    if 'hair_color' in body:
+        character1.hair_color = body["hair_color"]
+    elif 'eye_color' in body:
+        character1.eye_color = body["eye_color"]            
+
+    db.session.commit()            
+    
+    return "Character's data has been updated", 200   
+
+@app.route('/people/<int:id>', methods=['GET'])
+def getCharacter(id):
+
+    character_query = Characters.query.get(id)
+
+    if character_query == None:
+        raise APIException('Character does not exist', status_code=404)    
+
+    return jsonify(character_query.serialize()), 200
+
+@app.route('/people/<int:id>', methods=['DELETE'])
+def deleteCharacter(id):
+    character1 = Characters.query.get(id)
+    if character1 == None:
+        raise APIException('Character not found', status_code=404)
+    db.session.delete(character1)
+    db.session.commit()  
+    return 'Character deleted'    
 
 @app.route('/planets', methods=['GET'])
-def planetas():
-   
- 
+def getPlanets():
 
-    # puedes convertir esa variable en un string json así
-    json_text = flask.jsonify(planets)
+    planets_query = Planets.query.all()
 
-    # y luego puedes retornarla (return) en el response body así:
-    return json_text
-@app.route('/planets/<int:planet_id>', methods=['GET'])
-def get_planet(planet_id):
-	planetFound=[id for id in planets if id["id"] == planet_id]
-	return jsonify({"planeta": planetFound})
+    all_planets = list(map(lambda x: x.serialize(), planets_query))
 
+    return jsonify(all_planets), 200
 
-@app.route('/peoples/<int:people_id>', methods=['GET'])
-def get_people(people_id):
-	peopleFound=[id for id in peoples if id["id"]==people_id]
-	return jsonify({"personaje": peopleFound})
+@app.route('/planets', methods=['POST'])
+def addPlanet():
 
+    body = request.get_json()
+    if body is None:
+        return "The request body is null", 400
+    if 'name' not in body:
+        return "Add the planet's name", 400
+    if 'population' not in body:
+        return "Add planet's population", 400
+    if 'terrain' not in body:
+        return "Add planet's terrain", 400          
+
+    new_planet = Planets(name=body["name"], population=body["population"], terrain=body["terrain"])
+    db.session.add(new_planet)   
+    db.session.commit()             
+    
+    return 'Planet was added', 200
+
+@app.route('/planets/<int:id>', methods=['PUT'])
+def updatePlanet(id):
+    planet1 = Planets.query.get(id)
+
+    body = request.get_json()
+    
+    if body == None:
+        return 'Body is empty', 400
+    if 'name' in body:
+        return "Name cannot be edited", 400
+    if 'population' in body:
+        planet1.population = body["population"]
+    elif 'terrain' in body:
+        planet1.terrain = body["terrain"]
+    
+    db.session.commit()            
+    
+    return "Planet's data has been updated", 200          
+
+@app.route('/planets/<int:id>', methods=['GET'])
+def getPlanet(id):
+
+    planet_query = Planets.query.get(id)
+
+    if planet_query == None:
+        raise APIException('Planet does not exist', status_code=404)    
+
+    return jsonify(planet_query.serialize()), 200
+
+@app.route('/planets/<int:id>', methods=['DELETE'])
+def deletePlanet(id):
+    planet1 = Planets.query.get(id)
+    if planet1 == None:
+        raise APIException('Planet not found', status_code=404)
+    db.session.delete(planet1)
+    db.session.commit()  
+    return 'Planet deleted'
+
+@app.route('/user/favorites', methods=['GET'])
+def userFavorites():
+
+    favchar_query = Favorite_Characters.query.all()
+    favplat_query = Favorite_Planets.query.all()
+
+    user_Favorites = list(map(lambda x: x.serialize(), favchar_query))
+    user_Favorites1 = list(map(lambda x: x.serialize(), favplat_query))
+
+    return jsonify(user_Favorites, user_Favorites1), 200
 
 @app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
-def add_new_pl():
-    request_body = request.data
-    print("Incoming request with the following body", request_body)
-    decoded_object = json.loads(request.data)
-    favoritos.append(decoded_object)
-    json_textt = flask.jsonify(favoritos)
-    return  json_textt
+def addFavoritePlanet(planet_id):
+
+    body = request.get_json()
+
+    if body == None:
+        return "The request body is null", 400
+    if 'user_id' not in body:
+        return "Add the user's ID number", 400    
+    if 'planet_id' not in body:
+        return "Add the character's ID number", 400
+
+    newFav = Favorite_Planets(user_id=body["user_id"], planet_id=body["planet_id"])
+
+    favPlat = Planets.query.get(newFav.planet_id)
+
+    if favPlat == None:
+        raise APIException('Planet does not exist', status_code=404)
+
+    db.session.add(newFav)
+    db.session.commit()
+
+    return 'Favorite planet has been added', 200    
 
 @app.route('/favorite/people/<int:people_id>', methods=['POST'])
-def add_new_p():
-    request_body = request.data
-    print("Incoming request with the following body", request_body)
-    decoded_object = json.loads(request.data)
-    favoritos.append(decoded_object)
-    json_textt = flask.jsonify(favoritos)
-    return  json_textt
+def addFavoritePeople(people_id):
 
+    body = request.get_json()
 
+    if body == None:
+        return "The request body is null", 400
+    if 'user_id' not in body:
+        return "Add the user's ID number", 400    
+    if 'characters_id' not in body:
+        return "Add the character's ID number", 400
 
-@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
-def delete_pl(position):
-    print("This is the position to delete: ",position)
-    del favoritos[position]
-    json_texttt = flask.jsonify(favoritos)
-    return json_texttt
+    newFav = Favorite_Characters(user_id=body["user_id"], characters_id=body["characters_id"])
 
-@app.route('/favorite/people/<int:people_id>', methods=['DELETE'])
-def delete_p(position):
-    print("This is the position to delete: ",position)
-    del favoritos[position]
-    json_texttt = flask.jsonify(favoritos)
-    return json_texttt
+    favChar = Characters.query.get(newFav.characters_id)
 
-@app.route('/users/favorites', methods=['POST'])
-def add_new_pll():
-    request_body = request.data
-    print("Incoming request with the following body", request_body)
-    decoded_object = json.loads(request.data)
-    favoritos.append(decoded_object)
-    json_textt = flask.jsonify(favoritos)
-    return  json_textt
+    if favChar == None:
+        raise APIException('Character does not exist', status_code=404)
 
+    db.session.add(newFav)
+    db.session.commit()
+
+    return 'Favorite character has been added', 200 
+
+@app.route('/favorite/people/<int:id>', methods=['DELETE'])
+def deleteFavoriteCharacter(id):
+    character1 = Favorite_Characters.query.get(id)
+    if character1 == None:
+        raise APIException('Character not found', status_code=404)
+    db.session.delete(character1)
+    db.session.commit()  
+    return 'Favorite Character deleted'
+
+@app.route('/favorite/planet/<int:id>', methods=['DELETE'])
+def deleteFavoritePlanet(id):
+    planet1 = Favorite_Planets.query.get(id)
+    if planet1 == None:
+        raise APIException('Planet not found', status_code=404)
+    db.session.delete(planet1)
+    db.session.commit()  
+    return 'Favorite Planet deleted'           
 
     
-  
-
-    
-
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
