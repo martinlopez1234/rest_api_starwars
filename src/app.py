@@ -149,6 +149,24 @@ def create_character():
       
       return jsonify({"mensaje":"Character created"}), 200
 
+@app.route('/favorite/planet/<int:id>', methods=['DELETE'])
+def deleteFavoritePlanet(id):
+    planet1 = FavoritesPlanets.query.get(id)
+    if planet1 == None:
+        raise APIException('Planet not found', status_code=404)
+    db.session.delete(planet1)
+    db.session.commit()  
+    return 'Favorite Planet deleted'   
+
+@app.route('/favorite/people/<int:id>', methods=['DELETE'])
+def deleteFavoriteCharacter(id):
+    character1 = FavoritesCharacter.query.get(id)
+    if character1 == None:
+        raise APIException('Character not found', status_code=404)
+    db.session.delete(character1)
+    db.session.commit()  
+    return 'Favorite Character deleted'
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
