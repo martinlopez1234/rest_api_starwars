@@ -49,6 +49,23 @@ def list_users():
     
     return jsonify(data), 200
 
+@app.route('/user', methods=['POST'])
+def list_userss():
+
+    id  =  request.json.get("id",None)
+    email = request.json.get("email",None)
+    password = request.json.get("password",None)
+    is_active = request.json.get("is_active",None)
+    name = request.json.get("name",None)
+    surname = request.json.get("surname",None)
+    
+    new_Revision = User( id=id, email=email,password=password,is_active=is_active,name=name, surname=surname)    
+    db.session.add(new_Revision)
+    db.session.commit()
+
+    
+    return jsonify(data), 200
+
 @app.route('/users/favorites', methods=['GET'])
 def list_favorites():
 
